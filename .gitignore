@@ -1,0 +1,4 @@
+*.DS_Store
+*.nc
+*.RData
+data

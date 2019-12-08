@@ -1,2 +1,6 @@
-# FTE
-The Fraction of Threshold Exceedance (FTE) metric for verification of spatial structure in ensembles of forecast fields
+# Fraction of Threshold Exceedance
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+
+## Suggested citation
+
