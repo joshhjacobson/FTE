@@ -16,7 +16,7 @@ imonth = int(cmonth)
 iyear = int(cyear)
 
 ##  Load GEFS and downscaled data
-infile = '/Users/joshjacobson/GitHub/random-fields/data/gefs/original/refcstv2_precip_ccpav3_subset_066_to_072.nc'
+infile = 'data/refcstv2_precip_ccpav3_subset_066_to_072.nc'
 nc = Dataset(infile)
 yyyymmddhh_init = nc.variables['yyyymmddhh_init'][:]
 lons_anal = nc.variables['lons_anal'][:,:]
@@ -28,7 +28,7 @@ apcp_anal = nc.variables['apcp_anal'][:,:,:]
 apcp_anal_upsc = nc.variables['apcp_anal_upsc'][:,4:-4,4:-4]
 nc.close()
 
-infile = '/Users/joshjacobson/GitHub/random-fields/data/gsdm/GSDM_downscaled_01_066_to_072.nc'
+infile = 'data/GSDM_downscaled_01_066_to_072.nc'
 nc = Dataset(infile)
 fcst_dwnsc = nc.variables['downscaled'][iyear-2002,iday-1,:,:,:]
 nc.close()
@@ -39,7 +39,7 @@ ndays, nya, nxa = apcp_anal.shape
 
 # Set up colormap and coordinates for plotting
 BuPu = cm.get_cmap('BuPu',12)
-states_us = np.load('/Users/joshjacobson/Downloads/states_us.npz', allow_pickle=True,)['polygons'].tolist()
+states_us = np.load('data/states_us.npz', allow_pickle=True,)['polygons'].tolist()
 
 dxa = lons_anal[0,1]-lons_anal[0,0]
 dya = lats_anal[1,0]-lats_anal[0,0]
