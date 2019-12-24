@@ -1,5 +1,5 @@
 
-## Create standard PIT histograms from downscaled field data
+## Create standard vefification rank histograms from downscaled field data
 
 library(lubridate)
 library(dplyr)
@@ -7,7 +7,7 @@ library(reshape2)
 library(ggplot2)
 
 ## import fields_dat dim(lat x lon x time x mem)
-load('./data/gefs_downscaled_fields.RData')
+load('../data/gefs_downscaled_fields.RData')
 
 m <- c(1, 4, 7, 10) # Jan, Apr, Jul, Oct
 dates <- seq.Date(as.Date('2002-01-02'), as.Date('2015-12-30'), by='day')
@@ -15,9 +15,9 @@ dates <- dates[(month(dates) %in% m)]
 
 
 ## iterate over time, compute pointwise ranks across members
-ranks_arr <- apply(field_dat, c(3,1,2), 
+ranks_arr <- apply(field_dat, c(3,1,2),
                    function(point){
-                     if(length(unique(point)) == 1) { 
+                     if(length(unique(point)) == 1) {
                        ## ignore exact ties in rank
                        return(NA)
                      }
@@ -43,9 +43,9 @@ month_labs <- c(
 )
 
 ## stratify days by month and build histograms
-png("pit_downscaled.png", units="in", height=2.3, width=8, res=200, pointsize=10)
+png("fig08.png", units="in", height=2.3, width=8, res=200, pointsize=10)
 
-ranks_df %>% 
+ranks_df %>%
   mutate(month = month(date)) %>%
   ggplot(aes(x=rank)) +
   geom_hline(yintercept=1, linetype=3, size=0.3, color="grey") +
@@ -67,4 +67,3 @@ ranks_df %>%
         plot.margin = unit(c(0,0.1,0,0), "cm"))
 
 dev.off()
-

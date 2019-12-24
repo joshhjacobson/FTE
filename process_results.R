@@ -13,7 +13,7 @@ library(ggplot2)
 
 # Collect data ------------------------------------------------------------
 
-nam <- "data/exceed_dat_s"
+nam <- "data/simulation_results/exceed_dat_s"
 s_1 <- seq(1,4,0.5)
 tau <- seq(0,4,0.5)
 N <- 5000
@@ -70,7 +70,7 @@ rank_tab <- melt(rank_arr, value.name='rank',
             dplyr::select(., s1, s2, tau, N, rank)
 
 
-## fit beta parameters to rank hists after spreading
+## fit beta parameters to rank hists after disaggregation
 set.seed(10)
 spread_rank <- function(r) {
   return(runif(1, r-1/24, r+1/24))

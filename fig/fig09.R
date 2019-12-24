@@ -13,7 +13,7 @@ library(latex2exp)
 # Threshold exceedence ranking --------------------------------------------
 
 ## import fields_dat dim(lat x lon x time x mem)
-load("./data/gefs_downscaled_fields.RData")
+load("../data/gefs_downscaled_fields.RData")
 
 ## compute the mean threshold exceedence of fields_df at array of thresholds
 ## and return analysis ranks
@@ -23,7 +23,7 @@ exceed_ranks <- function(dat_arr, tau){
   ranks <- array(dim = length(tau))
   for (i in 1:length(tau)) {
     m <- apply(dat_arr, 3, function(field) mean(as.vector(field) > tau[i]))
-    if(length(unique(m)) != 1) { 
+    if(length(unique(m)) != 1) {
       ranks[i] <- rank(m, ties.method = "random")[1]
     } else {
       # exclude exact ties
@@ -68,8 +68,8 @@ down_fit_tab <- ranks_df %>%
 ## build dataframe with months and tau as factors to facet over
 month_labs <- rep("", 12)
 month_labs[c(1,4,7,10)] <- c("January", "April", "July", "October")
-tau_labs <- c(tau5=TeX(paste("$\\tau = $", "5 mm")), 
-              tau10=TeX(paste("$\\tau = $", "10 mm")), 
+tau_labs <- c(tau5=TeX(paste("$\\tau = $", "5 mm")),
+              tau10=TeX(paste("$\\tau = $", "10 mm")),
               tau20=TeX(paste("$\\tau = $", "20 mm")))
 
 ranks_df <- ranks_df %>%
@@ -78,13 +78,13 @@ ranks_df <- ranks_df %>%
   mutate(month = as.factor(month_labs[month])) %>%
   mutate(rank = (rank-0.5)/12)
 
-ranks_df$month <- factor(ranks_df$month, 
+ranks_df$month <- factor(ranks_df$month,
                      levels = c("January", "April", "July", "October"),
                      labels = c("bold(January)", "bold(April)", "bold(July)", "bold(October)"))
 levels(ranks_df$tau) <- tau_labs
 
 
-png("fte_downscaled.png", units="in", height=6.2, width=8, res=200, pointsize=10)
+png("fig09.png", units="in", height=6.2, width=8, res=200, pointsize=10)
 
 ranks_df %>%
   ggplot(aes(x=rank)) +
@@ -109,5 +109,3 @@ ranks_df %>%
         plot.margin = unit(c(0,0,0,0), "cm"))
 
 dev.off()
-
-

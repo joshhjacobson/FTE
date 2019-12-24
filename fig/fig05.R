@@ -4,11 +4,11 @@
 library(tidyverse)
 library(reshape2)
 
-cont_fit_tab <- read.table('./data/cont_fit_tab.RData')
+cont_fit_tab <- read.table('../data/cont_fit_tab.RData')
 
-df <- cont_fit_tab %>% 
-  filter(s1==2, ratio==0.5 | ratio==0.9 | ratio==1.0 | ratio == 1.1 | ratio==1.5) %>% 
-  select(-s1) %>% 
+df <- cont_fit_tab %>%
+  filter(s1==2, ratio==0.5 | ratio==0.9 | ratio==1.0 | ratio == 1.1 | ratio==1.5) %>%
+  select(-s1) %>%
   melt(id.vars=c("tau", "ratio"))
 
 ratio_labs <- c(
@@ -19,12 +19,12 @@ ratio_labs <- c(
   `1.5` = "ratio = 1.5"
 )
 
-png("beta_params_tau.png", units="in", height=2.2, width=8.4, res=200, pointsize=10)
+png("fig05.png", units="in", height=2.2, width=8.4, res=200, pointsize=10)
 
 ggplot(data=df, aes(x=tau, y=value, color=variable, linetype=variable)) +
   facet_grid(~ratio, labeller = as_labeller(ratio_labs)) +
   geom_hline(yintercept=1, linetype=3, size=0.2) +
-  geom_line(size=0.25) + 
+  geom_line(size=0.25) +
   geom_point(size=0.6) +
   scale_colour_manual(values=c(a="darkred", b="skyblue3")) +
   scale_linetype_manual(breaks=c("a","b"), values=c(2, 1)) +
@@ -43,4 +43,3 @@ ggplot(data=df, aes(x=tau, y=value, color=variable, linetype=variable)) +
         plot.margin = unit(c(0,0,0,0.1), "cm"))
 
 dev.off()
-

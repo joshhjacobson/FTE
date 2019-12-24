@@ -1,5 +1,5 @@
 
-## Produce FTE histograms for downscaled GEFS data
+## Collect downscaled forecast and analysis data in a single array
 
 library(ncdf4)
 library(lubridate)
@@ -13,7 +13,7 @@ library(ggplot2)
 ## NOTE: dates range from 2002010200 to 2015123000
 
 ## grab analyses and time data
-ncin <- nc_open('./data/gefs/original/refcstv2_precip_ccpav3_subset_066_to_072.nc')
+ncin <- nc_open('./data/GEFS_GSDM_CCPA/refcstv2_precip_ccpav3_subset_066_to_072.nc')
 apcp_anal <- ncvar_get(ncin, 'apcp_anal')
 
 ## subset data to same region
@@ -34,14 +34,14 @@ rm(ncin, apcp_anal)
 
 # Ensembles (downscaled) --------------------------------------------------
 
-## NOTES: Each array has space for 31 days, but 
+## NOTE: Each array has space for 31 days, but 
 #   - January 2002 starts from 01/02 (start timeframe one day earlier, and trim)
 #   - April always has 30 days
 
 m <- c(1, 4, 7, 10) # Jan, Apr, Jul, Oct
 dates <- seq.Date(as.Date('2002-01-02'), as.Date('2015-12-30'), by='day')
 
-files <- list.files(path='./data', pattern='*.nc', full.names=TRUE)
+files <- list.files(path='./data/GEFS_GSDM_CCPA', pattern='*.nc', full.names=TRUE)
 lapply(seq_along(files), function(i) {
   ncin <- nc_open(files[i])
   fcsts <- ncvar_get(ncin, 'downscaled')
@@ -61,15 +61,12 @@ lapply(seq_along(files), function(i) {
   
   # january
   if(m[i]==1){
-    # nil <- seq(31, dim(fcsts)[4], by=31)
     fcsts <- fcsts[,,, -31]
   }
   
   date_idx <- which(month(dates)==m[i])
   for(j in 1:11) {
     jj <- j+1
-    # print(dim(field_dat[,, date_idx, jj]))
-    # print(dim(fcsts[,,j,]))
     field_dat[,, date_idx, jj] <<- fcsts[lon_idx, lat_idx, j,]
   }
   
@@ -80,6 +77,7 @@ rm(files)
 
 date_idx <- (month(dates) %in% m)
 field_dat <- field_dat[,, date_idx,] 
-save(field_dat, file="gefs_downscaled_fields.RData")
+
+save(field_dat, file="./data/gsdm_downscaled_fields.RData")
 
 

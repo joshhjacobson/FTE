@@ -5,11 +5,11 @@ library(tidyverse)
 library(reshape2)
 
 ## Beta param plot for a1 = 2
-cont_fit_tab <- read.table('./data/cont_fit_tab.RData')
+cont_fit_tab <- read.table('../data/cont_fit_tab.RData')
 
-df <- cont_fit_tab %>% 
-  filter((tau==1 & s1==1) |  (tau==1 & s1==3)) %>% 
-  dplyr::select(-tau) %>% 
+df <- cont_fit_tab %>%
+  filter((tau==1 & s1==1) |  (tau==1 & s1==3)) %>%
+  dplyr::select(-tau) %>%
   melt(id.vars=c("s1", "ratio"))
 
 range_labs <- c(
@@ -17,12 +17,12 @@ range_labs <- c(
   `3` = "a0 = 3"
 )
 
-png("beta_params_range.png", units="in", height=3.3, width=6.4, res=200, pointsize=9)
+png("fig06.png", units="in", height=3.3, width=6.4, res=200, pointsize=9)
 
 ggplot(data=df, aes(x=ratio, y=value, color=variable, linetype=variable)) +
   facet_grid(~s1, labeller = as_labeller(range_labs)) +
   geom_hline(yintercept=1, linetype=3, size=0.3) +
-  geom_line(size=0.3) + 
+  geom_line(size=0.3) +
   geom_point(size=0.8) +
   scale_colour_manual(values=c(a="darkred", b="skyblue3")) +
   scale_linetype_manual(breaks=c("a","b"), values=c(2, 1)) +
@@ -41,4 +41,3 @@ ggplot(data=df, aes(x=ratio, y=value, color=variable, linetype=variable)) +
         plot.margin = unit(c(0,0,0,0.1), "cm"))
 
 dev.off()
-
