@@ -31,3 +31,4 @@ Code used to produce all figures.
 
 
 ## Suggested citation
+Jacobson, J., Kleiber, W., Scheuerer, M., & Bellier, J., (in review). Beyond univariate calibration: Verifying spatial structure in ensembles of forecast fields.
