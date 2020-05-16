@@ -2,4 +2,5 @@
 *.nc
 *.RData
 *.Rhistory
+.vscode
 data

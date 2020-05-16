@@ -43,7 +43,7 @@ iday_gefs = np.where(yyyymmddhh_init==yyyymmddhh_verif_init)[0][0]
 
 ## Set up colormap and coordinates for plotting
 BuPu = cm.get_cmap('BuPu',12)
-states_us = np.load('data/states_us.npz', allow_pickle=True,)['polygons'].tolist()
+states_us = np.load('../data/states_us.npz', allow_pickle=True,)['polygons'].tolist()
 
 dxa = lons_anal[0,1]-lons_anal[0,0]
 dya = lats_anal[1,0]-lats_anal[0,0]

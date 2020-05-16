@@ -7,7 +7,22 @@ library(reshape2)
 library(ggplot2)
 
 ## import fields_dat dim(lat x lon x time x mem)
-load('../data/gefs_downscaled_fields.RData')
+load('../data/gsdm_downscaled_fields.RData')
+
+disagg_rank <- function(r) {
+  return(runif(1, r-1/24, r+1/24))
+}
+
+beta_score <- function(a, b) {
+  bs <- 1 - sqrt(1 / (as.numeric(a)*as.numeric(b)))
+  return( round(bs, 3) )
+}
+
+beta_bias <- function(a, b) {
+  bb <- as.numeric(b) - as.numeric(a)
+  return( round(bb, 3) )
+}
+
 
 m <- c(1, 4, 7, 10) # Jan, Apr, Jul, Oct
 dates <- seq.Date(as.Date('2002-01-02'), as.Date('2015-12-30'), by='day')
@@ -33,6 +48,17 @@ colnames(ranks_df) <- dates
 ranks_df <- melt(ranks_df, variable.name='date', value.name='rank')
 ranks_df <- ranks_df %>% drop_na() %>% mutate(rank = (rank-0.5)/12)
 
+## fit beta parameters to density rank hists
+set.seed(20)
+down_fit_tab <- ranks_df %>%
+  drop_na() %>%
+  mutate(rank = sapply(rank, disagg_rank), month = month(date)) %>%
+  group_by(month) %>%
+  summarise(params=paste(fitdist(rank,'beta')$estimate, collapse=" ")) %>%
+  separate(params, c('a', 'b'), sep=" ") %>%
+  mutate(beta.score=beta_score(a, b), beta.bias=beta_bias(a, b)) %>%
+  unite(scores, beta.score:beta.bias, sep = ", ") 
+
 
 ## create labels for facets
 month_labs <- c(
@@ -51,6 +77,7 @@ ranks_df %>%
   geom_hline(yintercept=1, linetype=3, size=0.3, color="grey") +
   geom_histogram(aes(y=..density..), bins=12, fill="black", color="white") +
   facet_wrap(~month, ncol=4, labeller=as_labeller(month_labs)) +
+  annotate("text", x=0.45, y=1.5, size=4, label=down_fit_tab$scores) +
   labs(y="", x="") +
   theme_bw() +
   theme(legend.title = element_blank(),
