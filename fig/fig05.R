@@ -15,6 +15,14 @@ beta_bias <- function(a, b) {
 }
 
 
+
+## bootstrapped parameter fits for fig 5
+# for each ratio in (0.5, 0.9, 1.0, 1.1. 1.5) we need multiple fits at each threshold
+# generate new table for each ratio (samples x threshold)
+
+load('../data/listed_ratio_ranks.RData')
+
+
 cont_fit_tab <- read.table('../data/cont_fit_tab.RData')
 
 df_params <- cont_fit_tab %>%
@@ -37,12 +45,13 @@ ratio_labs <- c(
 )
 
 
-p1 <- ggplot(data=df_params, aes(x=tau, y=value, color=variable)) +
+p1 <- ggplot(data=df_params, aes(x=tau, y=value, color=variable, linetype=variable)) +
   facet_grid(~ratio, labeller = as_labeller(ratio_labs)) +
   geom_hline(yintercept=1, linetype=3, size=0.2) +
-  geom_line(size=0.25) +
+  geom_line(size=0.3) +
   geom_point(size=0.6) +
-  scale_colour_manual(values=c(a="#B35806", b="#542788")) +
+  scale_colour_manual(values=c(a="sandybrown", b="navy")) +
+  scale_linetype_manual(breaks=c("a","b"), values=c(1, 2)) +
   scale_y_continuous(breaks = c(0.5, 1.0, 1.5)) +
   labs(x="", y="Parameter") +
   theme_bw() +
@@ -60,7 +69,7 @@ p1 <- ggplot(data=df_params, aes(x=tau, y=value, color=variable)) +
 p2 <-ggplot(data=df_scores, aes(x=tau, y=value, color=variable, linetype=variable)) +
   facet_grid(~ratio) +
   geom_hline(yintercept=0, linetype=3, size=0.2) +
-  geom_line(size=0.25) +
+  geom_line(size=0.3) +
   geom_point(size=0.6) +
   scale_colour_manual(values=c(score="skyblue3", bias="darkred")) +
   scale_linetype_manual(breaks=c("score","bias"), values=c(1, 2)) +
@@ -79,6 +88,7 @@ p2 <-ggplot(data=df_scores, aes(x=tau, y=value, color=variable, linetype=variabl
         plot.margin = unit(c(0,0,0,0.1), "cm"))
 
 
-png("fig05.png", units="in", height=4.4, width=8.4, res=200, pointsize=10)
+# png("fig05.png", units="in", height=4.4, width=8.4, res=200, pointsize=10)
+grid.newpage()
 grid.draw(rbind(ggplotGrob(p1), ggplotGrob(p2), size="last"))
-dev.off()
+# dev.off()
