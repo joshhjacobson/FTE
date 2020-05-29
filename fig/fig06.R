@@ -29,13 +29,13 @@ range_labs <- c(
 
 png("fig06.png", units="in", height=3.3, width=6.4, res=200, pointsize=9)
 
-ggplot(data=df, aes(x=ratio, y=value, color=variable, linetype=variable)) +
+ggplot(data=df, aes(x=ratio, y=value, color=variable)) +
   facet_grid(~s1, labeller = as_labeller(range_labs)) +
   geom_hline(yintercept=0, linetype=3, size=0.3) +
   geom_line(size=0.3) +
   geom_point(size=0.8) +
   scale_colour_manual(values=c(score="skyblue3", bias="darkred")) +
-  scale_linetype_manual(breaks=c("score","bias"), values=c(1, 2)) +
+  # scale_linetype_manual(breaks=c("score","bias"), values=c(1, 2)) +
   scale_y_continuous(breaks=seq(-0.8, 0.2, 0.2)) +
   labs(x="Ratio", y="Metric") +
   theme_bw() +

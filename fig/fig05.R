@@ -6,35 +6,29 @@ library(reshape2)
 library(grid)
 library(gridExtra)
 
-beta_score <- function(a, b) {
-  return( 1 - sqrt(1 / (as.numeric(a)*as.numeric(b))) )
-}
+boot_fit_tab <- read.table('../data/boot_fit_tab.RData')
 
-beta_bias <- function(a, b) {
-  return( as.numeric(b) - as.numeric(a) )
-}
+df_params <- boot_fit_tab %>%
+  select(c(ratio, tau, a, b)) %>%
+  pivot_longer(cols=c(a, b), names_to="param") %>%
+  group_by(ratio, tau, param) %>%
+  summarise(
+    med = median(value),
+    lwr = quantile(value, 0.025),
+    upr = quantile(value, 0.975)
+  )
 
+df_metric <- boot_fit_tab %>%
+  rename(score=beta.score, bias=beta.bias) %>%
+  select(c(ratio, tau, score, bias)) %>%
+  pivot_longer(cols=c(score, bias), names_to="metric") %>%
+  group_by(ratio, tau, metric) %>%
+  summarise(
+    med = median(value),
+    lwr = quantile(value, 0.025),
+    upr = quantile(value, 0.975)
+  )
 
-
-## bootstrapped parameter fits for fig 5
-# for each ratio in (0.5, 0.9, 1.0, 1.1. 1.5) we need multiple fits at each threshold
-# generate new table for each ratio (samples x threshold)
-
-load('../data/listed_ratio_ranks.RData')
-
-
-cont_fit_tab <- read.table('../data/cont_fit_tab.RData')
-
-df_params <- cont_fit_tab %>%
-  filter(s1==2, ratio==0.5 | ratio==0.9 | ratio==1.0 | ratio == 1.1 | ratio==1.5) %>%
-  dplyr::select(-s1) %>%
-  melt(id.vars=c("tau", "ratio"))
-
-df_scores <- cont_fit_tab %>%
-  filter(s1==2, ratio==0.5 | ratio==0.9 | ratio==1.0 | ratio == 1.1 | ratio==1.5) %>%
-  mutate(score=beta_score(a, b), bias=beta_bias(a, b)) %>%
-  dplyr::select(-c(s1, a, b)) %>%
-  melt(id.vars=c("tau", "ratio"))
 
 ratio_labs <- c(
   `0.5` = "ratio = 0.5",
@@ -44,14 +38,18 @@ ratio_labs <- c(
   `1.5` = "ratio = 1.5"
 )
 
+# The errorbars overlap, so use position_dodge to move them horizontally
+pd <- position_dodge(0.1) # move them .05 to the left and right
 
-p1 <- ggplot(data=df_params, aes(x=tau, y=value, color=variable, linetype=variable)) +
+
+p1 <- ggplot(data=df_params, aes(x=tau, y=med, color=param)) +
   facet_grid(~ratio, labeller = as_labeller(ratio_labs)) +
   geom_hline(yintercept=1, linetype=3, size=0.2) +
-  geom_line(size=0.3) +
-  geom_point(size=0.6) +
+  geom_line(size=0.2, position=pd) +
+  geom_point(size=0.4, position=pd) +
+  geom_errorbar(aes(ymin=lwr, ymax=upr), size=0.2, width=0.2, position=pd) +
   scale_colour_manual(values=c(a="sandybrown", b="navy")) +
-  scale_linetype_manual(breaks=c("a","b"), values=c(1, 2)) +
+  # scale_linetype_manual(breaks=c("a","b"), values=c(1, 2)) +
   scale_y_continuous(breaks = c(0.5, 1.0, 1.5)) +
   labs(x="", y="Parameter") +
   theme_bw() +
@@ -66,13 +64,14 @@ p1 <- ggplot(data=df_params, aes(x=tau, y=value, color=variable, linetype=variab
         aspect.ratio = 1/1,
         plot.margin = unit(c(0,0,0,0.1), "cm"))
 
-p2 <-ggplot(data=df_scores, aes(x=tau, y=value, color=variable, linetype=variable)) +
+p2 <- ggplot(data=df_metric, aes(x=tau, y=med, color=metric)) +
   facet_grid(~ratio) +
   geom_hline(yintercept=0, linetype=3, size=0.2) +
-  geom_line(size=0.3) +
-  geom_point(size=0.6) +
+  geom_line(size=0.2, position=pd) +
+  geom_point(size=0.4, position=pd) +
+  geom_errorbar(aes(ymin=lwr, ymax=upr), size=0.2, width=0.2, position=pd) +
   scale_colour_manual(values=c(score="skyblue3", bias="darkred")) +
-  scale_linetype_manual(breaks=c("score","bias"), values=c(1, 2)) +
+  # scale_linetype_manual(breaks=c("score","bias"), values=c(1, 2)) +
   scale_y_continuous(breaks=seq(-0.8,0.4,0.4)) +
   labs(x="Threshold", y="Metric") +
   theme_bw() +
@@ -88,7 +87,7 @@ p2 <-ggplot(data=df_scores, aes(x=tau, y=value, color=variable, linetype=variabl
         plot.margin = unit(c(0,0,0,0.1), "cm"))
 
 
-# png("fig05.png", units="in", height=4.4, width=8.4, res=200, pointsize=10)
-grid.newpage()
+png("fig05.png", units="in", height=4, width=8.4, res=250, pointsize=9)
+# grid.newpage()
 grid.draw(rbind(ggplotGrob(p1), ggplotGrob(p2), size="last"))
-# dev.off()
+dev.off()
