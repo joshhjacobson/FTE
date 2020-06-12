@@ -52,4 +52,4 @@ boot_fit_tab <- melt(boot_fit, varnames=c("N", "param", "tau", "ratio")) %>%
     beta.bias=beta_bias(a, b)
   )
 
-write.table(boot_fit_tab, file="data/supplement/boot_fit_tab_no_corr.RData")
+write.table(boot_fit_tab, file="../data/supplement/boot_fit_tab_no_corr.RData")
