@@ -24,7 +24,7 @@ rank_obs <- function(means) {
 
 
 # NOTE: s1 = 2
-nam <- "../data/supplement/exceed_dat_no_corr_s2.RData"
+nam <- "../data/appx/exceed_dat_no_corr_s2.RData"
 load(nam)
 
 ## store verification fte rank data for each realization
@@ -74,7 +74,7 @@ listed_ratio_ranks <- rank_tab %>%
 
 # Save to data folder -----------------------------------------------------
 
-write.table(rank_tab, file='../data/supplement/rank_tab_s2_no_corr.RData')
-write.table(cont_fit_tab, file='../data/supplement/cont_fit_tab_s2_no_corr.RData')
-save(listed_ratio_ranks, file='../data/supplement/listed_ratio_ranks_s2_no_corr.RData')
+write.table(rank_tab, file='../data/appx/rank_tab_s2_no_corr.RData')
+write.table(cont_fit_tab, file='../data/appx/cont_fit_tab_s2_no_corr.RData')
+save(listed_ratio_ranks, file='../data/appx/listed_ratio_ranks_s2_no_corr.RData')
 

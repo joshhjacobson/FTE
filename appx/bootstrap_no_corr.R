@@ -4,7 +4,7 @@ library(reshape2)
 library(fitdistrplus)
 
 # NOTE: ranks have already been mapped to (0,1) and disaggregated
-load("../data/supplement/listed_ratio_ranks_s2_no_corr.RData")
+load("../data/appx/listed_ratio_ranks_s2_no_corr.RData")
 
 
 beta_score <- function(a, b) {
@@ -52,4 +52,4 @@ boot_fit_tab <- melt(boot_fit, varnames=c("N", "param", "tau", "ratio")) %>%
     beta.bias=beta_bias(a, b)
   )
 
-write.table(boot_fit_tab, file="../data/supplement/boot_fit_tab_no_corr.RData")
+write.table(boot_fit_tab, file="../data/appx/boot_fit_tab_no_corr.RData")

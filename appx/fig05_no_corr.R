@@ -6,7 +6,7 @@ library(reshape2)
 library(grid)
 library(gridExtra)
 
-boot_fit_tab <- read.table('../data/supplement/boot_fit_tab_no_corr.RData')
+boot_fit_tab <- read.table('../data/appx/boot_fit_tab_no_corr.RData')
 
 df_params <- boot_fit_tab %>%
   select(c(ratio, tau, a, b)) %>%

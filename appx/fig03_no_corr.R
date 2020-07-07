@@ -72,7 +72,7 @@ beta_bias <- function(a, b) {
 
 
 ## data for histogram
-rank_tab <- read.table('../data/supplement/rank_tab_s2_no_corr.RData')
+rank_tab <- read.table('../data/appx/rank_tab_s2_no_corr.RData')
 rank_tab <- rank_tab %>% mutate(rank = (rank-0.5)/12)
 
 ## range parameters and grid
