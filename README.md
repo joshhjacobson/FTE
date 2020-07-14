@@ -1,7 +1,7 @@
 # Fraction of Threshold Exceedance
 
 [![DOI](https://zenodo.org/badge/226600439.svg)](https://zenodo.org/badge/latestdoi/226600439)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3592495.svg)](https://doi.org/10.5281/zenodo.3592495)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3945512.svg)](https://doi.org/10.5281/zenodo.3945512)
 
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
