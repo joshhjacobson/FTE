@@ -6,7 +6,7 @@ library(reshape2)
 library(grid)
 library(gridExtra)
 
-boot_fit_tab <- read.table('../data/boot_fit_tab.RData')
+boot_fit_tab <- read.table('../data/appx/boot_fit_tab_no_corr.RData')
 
 df_params <- boot_fit_tab %>%
   select(c(ratio, tau, a, b)) %>%
@@ -87,7 +87,6 @@ p2 <- ggplot(data=df_metric, aes(x=tau, y=med, color=metric)) +
         plot.margin = unit(c(0,0,0,0.1), "cm"))
 
 
-png("fig05.png", units="in", height=4, width=8.4, res=250, pointsize=9)
-# grid.newpage()
+png("fig05_no_corr.png", units="in", height=4, width=8.4, res=250, pointsize=9)
 grid.draw(rbind(ggplotGrob(p1), ggplotGrob(p2), size="last"))
 dev.off()

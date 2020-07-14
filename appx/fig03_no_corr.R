@@ -2,9 +2,9 @@
 ## Binary verification and three ensemble members with FTE histogram
 
 library(RandomFields)
-library(fields)
 library(fitdistrplus)
 library(tidyverse)
+library(grid)
 library(gridExtra)
 library(RColorBrewer)
 
@@ -27,21 +27,22 @@ rhored_search <- function(xi, smooth, rng, var) {
   }
 }
 
-demo_ens_sim <- function(a1, a2) {
+demo_ens_sim <- function(a1, a2, seed) {
   ## grid
   x <- y <- seq(-20, 20, 0.2)
   ## model params
-  xi <- 0.8; smooth <- c(1.5, 1.5, 1.5); var <- c(1, 1)
+  xi <- 0; smooth <- c(1.5, 1.5, 1.5); var <- c(1, 1)
   
   rng <- c(a1, sqrt(a1*a2), a2)
   rho <- rhored_search(xi, smooth, rng, var)
   
   # model
-  set.seed(0)
+  set.seed(12)
   model_biwm <- RMbiwm(nu=smooth, s=rng, cdiag=var, rhored=rho)
   sim <- RFsimulate(model_biwm, x, y)
   
   ## ensemble perturbation
+  set.seed(seed)
   model_whittle <- RMwhittle(nu=smooth[3], notinvnu=TRUE,
                              scale=rng[3], var=var[2])
   omega <- RFsimulate(model_whittle, x, y, n=3)
@@ -71,7 +72,7 @@ beta_bias <- function(a, b) {
 
 
 ## data for histogram
-rank_tab <- read.table('../data/rank_tab.RData')
+rank_tab <- read.table('../data/appx/rank_tab_s2_no_corr.RData')
 rank_tab <- rank_tab %>% mutate(rank = (rank-0.5)/12)
 
 ## range parameters and grid
@@ -82,10 +83,12 @@ x <- y <- seq(-20, 20, 0.2)
 
 
 # Make figure -------------------------------------------------------------
+set.seed(0)
+seeds <- sample.int(100, 11)
 
 pl <- list()
 for (i in seq(1,11,5)){
-  fields <- demo_ens_sim(a1, a2[round(i/5)+1])
+  fields <- demo_ens_sim(a1, a2[round(i/5)+1], seed=seeds[i])
   dat <- expand.grid(x = x, y = y)
   dat["z"] <- fields[,1]
   
@@ -105,20 +108,20 @@ for (i in seq(1,11,5)){
         labs(x=NULL, y=NULL)
       pl[[i+j-1]] <<- p
     })
-  
+
   ## fte ranks for given range pair
   set.seed(0)
   j <- round(i/5)+1
-  df <- rank_tab %>% filter(s1==a1, s2==a2[j], tau==0)
-  
+  df <- rank_tab %>% dplyr::filter(s2==a2[j], tau==0)
+
   fit.beta <- df %>%
     mutate(rank = sapply(rank, disagg_rank)) %>%
     summarise(params=paste(fitdist(rank,'beta')$estimate, collapse=" ")) %>%
     separate(params, c('a', 'b'), sep=" ") %>%
     mutate(beta.score=beta_score(a, b), beta.bias=beta_bias(a, b)) %>%
     unite(scores, beta.score:beta.bias, sep = ", ") %>%
-    select(scores)
-  
+    dplyr::select(scores)
+
   p <- ggplot(df, aes(rank)) +
     geom_hline(yintercept=1, linetype=3, size=0.5, color="grey") +
     geom_histogram(aes(y=..density..), bins=12, fill="black", color="white") +
@@ -126,17 +129,17 @@ for (i in seq(1,11,5)){
     theme(plot.title = element_blank(),
           aspect.ratio = 1/1) +
     labs(x=NULL, y=NULL)
-  
+
   if (j == 1) {
-    p <- p + annotate("text", x=0.48, y=1.15, size=3.5, label=fit.beta$scores)
+    p <- p + annotate("text", x=0.48, y=1.18, size=3.5, label=fit.beta$scores)
   } else if (j == 2) {
     p <- p + ylim(0, 1.25) +
-      annotate("text", x=0.48, y=1.2, size=3.5, label=fit.beta$scores)
+      annotate("text", x=0.48, y=1.22, size=3.5, label=fit.beta$scores)
   } else {
     p <- p + ylim(0, 1.3) +
-      annotate("text", x=0.48, y=1.25, size=3.5, label=fit.beta$scores)
+      annotate("text", x=0.48, y=1.26, size=3.5, label=fit.beta$scores)
   }
-  
+
   pl[[i+4]] <- p
 }
 
@@ -152,6 +155,6 @@ grd <- rbind(tableGrob(t(col_labs), theme = tt),
                    arrangeGrob(grobs = pl, ncol=5),  size = "last"), size = "last")
 
 
-png('fig03.png', units='in', width=8, height=5, res=400, pointsize=9)
+png("fig03_no_corr.png", units='in', width=8, height=5, res=400, pointsize=9)
 grid.draw(grd)
 dev.off()

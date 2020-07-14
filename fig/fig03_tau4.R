@@ -77,7 +77,7 @@ rank_tab <- rank_tab %>% mutate(rank = (rank-0.5)/12)
 ## range parameters and grid
 a1 <- 2
 a2 <- c(0.9*a1, a1, 1.1*a1)
-tau <- 0
+tau <- 4
 x <- y <- seq(-20, 20, 0.2)
 
 
@@ -109,7 +109,7 @@ for (i in seq(1,11,5)){
   ## fte ranks for given range pair
   set.seed(0)
   j <- round(i/5)+1
-  df <- rank_tab %>% filter(s1==a1, s2==a2[j], tau==0)
+  df <- rank_tab %>% filter(s1==a1, s2==a2[j], tau==4) %>% drop_na()
   
   fit.beta <- df %>%
     mutate(rank = sapply(rank, disagg_rank)) %>%
@@ -130,10 +130,12 @@ for (i in seq(1,11,5)){
   if (j == 1) {
     p <- p + annotate("text", x=0.48, y=1.15, size=3.5, label=fit.beta$scores)
   } else if (j == 2) {
-    p <- p + ylim(0, 1.25) +
+    p <- p + 
+      # ylim(0, 1.25) +
       annotate("text", x=0.48, y=1.2, size=3.5, label=fit.beta$scores)
   } else {
-    p <- p + ylim(0, 1.3) +
+    p <- p + 
+      # ylim(0, 1.3) +
       annotate("text", x=0.48, y=1.25, size=3.5, label=fit.beta$scores)
   }
   
@@ -152,6 +154,6 @@ grd <- rbind(tableGrob(t(col_labs), theme = tt),
                    arrangeGrob(grobs = pl, ncol=5),  size = "last"), size = "last")
 
 
-png('fig03.png', units='in', width=8, height=5, res=400, pointsize=9)
+png('fig03_tau4.png', units='in', width=8, height=5, res=400, pointsize=9)
 grid.draw(grd)
 dev.off()

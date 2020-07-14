@@ -13,7 +13,7 @@ library(latex2exp)
 # Threshold exceedence ranking --------------------------------------------
 
 ## import fields_dat dim(lat x lon x time x mem)
-load("../data/gefs_downscaled_fields.RData")
+load("../data/gsdm_downscaled_fields.RData")
 
 ## compute the mean threshold exceedence of fields_df at array of thresholds
 ## and return analysis ranks
@@ -35,6 +35,16 @@ exceed_ranks <- function(dat_arr, tau){
 
 disagg_rank <- function(r) {
   return(runif(1, r-1/24, r+1/24))
+}
+
+beta_score <- function(a, b) {
+  bs <- 1 - sqrt(1 / (as.numeric(a)*as.numeric(b)))
+  return( round(bs, 3) )
+}
+
+beta_bias <- function(a, b) {
+  bb <- as.numeric(b) - as.numeric(a)
+  return( round(bb, 3) )
 }
 
 ## iterate over time, compute ranks at different thresholds
@@ -62,8 +72,9 @@ down_fit_tab <- ranks_df %>%
   drop_na() %>%
   summarise(params=paste(fitdist(rank,'beta')$estimate, collapse=" ")) %>%
   separate(params, c('a', 'b'), sep=" ") %>%
-  mutate(a=round(as.numeric(a), 3), b=round(as.numeric(b),3)) %>%
-  unite(params, a:b, sep = ", ")
+  mutate(beta.score=beta_score(a, b), beta.bias=beta_bias(a, b)) %>%
+  unite(scores, beta.score:beta.bias, sep = ", ") 
+
 
 ## build dataframe with months and tau as factors to facet over
 month_labs <- rep("", 12)
@@ -92,7 +103,7 @@ ranks_df %>%
   geom_histogram(aes(y=..density..), bins=12, fill="black", color="white") +
   scale_y_continuous(breaks=seq(0,2)) +
   facet_grid(rows=vars(tau), cols=vars(month), labeller=label_parsed) +
-  annotate("text", x=0.48, y=2.5, size=4, label=down_fit_tab$params) +
+  annotate("text", x=0.48, y=2.5, size=4, label=down_fit_tab$scores) +
   labs(y="", x="") +
   theme_bw() +
   theme(legend.title = element_blank(),

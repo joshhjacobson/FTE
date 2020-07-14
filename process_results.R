@@ -78,8 +78,7 @@ spread_rank <- function(r) {
 
 cont_fit_tab <- rank_tab %>%
   drop_na() %>%
-  mutate(rank = (rank-0.5)/12,
-         ratio=s2/s1) %>%
+  mutate(rank = (rank-0.5)/12, ratio=s2/s1) %>%
   mutate(rank = sapply(rank, spread_rank)) %>%
   group_by(s1,ratio,tau) %>%
   summarise(params=paste(fitdist(rank,'beta')$estimate, collapse=" ")) %>%
@@ -87,8 +86,22 @@ cont_fit_tab <- rank_tab %>%
   mutate(a=as.numeric(a), b=as.numeric(b))
 
 
+
+## separate each ratio group into seperate table with cols (ratio, tau, rank)
+# this will be used for bootstrap resampling in fig 5
+set.seed(10)
+listed_ratio_ranks <- rank_tab %>%
+  drop_na() %>%
+  mutate(rank = (rank-0.5)/12, ratio=s2/s1) %>%
+  filter(s1==2, ratio==0.5 | ratio==0.9 | ratio==1.0 | ratio == 1.1 | ratio==1.5) %>%
+  dplyr::select(c(ratio, tau, rank)) %>%
+  mutate(rank = sapply(rank, spread_rank)) %>%
+  group_split(ratio)
+
+
 # Save to data folder -----------------------------------------------------
 
 write.table(rank_tab, file='data/rank_tab.RData')
 write.table(cont_fit_tab, file='data/cont_fit_tab.RData')
+save(listed_ratio_ranks, file='data/listed_ratio_ranks.RData')
 
