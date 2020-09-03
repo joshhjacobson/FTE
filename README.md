@@ -31,4 +31,4 @@ Code used to produce all figures.
 
 
 ## Suggested citation
-Jacobson, J., Kleiber, W., Scheuerer, M., & Bellier, J., (in review). Beyond univariate calibration: Verifying spatial structure in ensembles of forecast fields.
+Jacobson, J., Kleiber, W., Scheuerer, M., and Bellier, J.: Beyond univariate calibration: verifying spatial structure in ensembles of forecast fields, Nonlin. Processes Geophys., 27, 411–427, https://doi.org/10.5194/npg-27-411-2020, 2020.
